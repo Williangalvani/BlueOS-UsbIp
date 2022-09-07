@@ -1,0 +1,85 @@
+<html>
+
+<head>
+    <title>USB IP</title>
+	<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+</head>
+
+<body>
+    <div id="app">
+        <v-app>
+            <v-main>
+                <v-container>
+                    <h1>USB-IP</h1>
+                    <v-row>
+                        <v-col>
+                            <v-card height="200" v-for="device in devices">
+                                <v-card-title> {{ device.device_data }} </v-card-title>
+                                <v-card-text>{{ device.device_data }}</v-card-text>
+                                <v-card-footer>
+                                    <v-switch :loading="this.loading? 'warning' : null" v-model="device.exposed"  inset :label="`Enable Driver`" @change="updateDevice(device.bus_id, $event)">
+                                        Sharing
+                                    </v-switch>
+                                </v-card-footer>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col>
+                            <v-card height="200">
+                                <v-card-text>{{ status }}</v-card-text>
+                                </v-card-footer>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-main>
+        </v-app>
+    </div>
+</body>
+<script src="/js/vue.js"></script>
+<script src="/js/vuetify.js"></script>
+<script src="/js/axios.min.js"></script>
+<script>
+    Vue.config.devtools = true;
+    var app = new Vue({
+        el: "#app",
+        vuetify: new Vuetify(),
+        data() {
+            return {
+                status: '-',
+                devices: [],
+                loading: false,
+                interval: 0,
+            };
+        },
+        methods: {
+            checkStatus() {
+                axios.get('/v1.0/command/list').then((result) => {
+                    this.devices = result.data;
+                    this.loading = false
+                })
+            },
+
+            updateDevice(device, newState){
+                clearInterval(this.interval)
+                this.loading = true
+                url = newState ? `/v1.0/command/bind?device=${device}` : `/v1.0/command/unbind?device=${device}`
+                axios.post(url).then((result) => {
+                    this.status = result.data.stdout;
+                    console.log(result.status)
+                    this.checkStatus()
+                })
+            }
+        },
+        mounted() {
+            this.checkStatus();
+        }
+    });
+</script>
+
+</html>

@@ -1,0 +1,9 @@
+{
+    "name":"USBIP",
+    "description":"Allows exposing USB peripherals to the topside computer",
+    "icon":"mdi-usb",
+    "company":"Blue Robotics",
+    "version":"1.0.0",
+    "webpage":"",
+    "api":""
+ }
