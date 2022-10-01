@@ -47,7 +47,7 @@ app = FastAPI(
     description="ZeroTierManager is an extension to provice ZeroTier connectivity to BlueOS",
 )
 # app.router.route_class = GenericErrorHandlingRoute
-logger.info("Starting ZeroTierManager!")
+logger.info("Starting USB IP manager")
 
 @app.get("/command/list", status_code=status.HTTP_200_OK)
 @version(1, 0)
