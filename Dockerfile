@@ -25,7 +25,7 @@ LABEL company '{\
         "name": "Blue Robotics",\
         "email": "support@bluerobotics.com"\
     }'
-LABEL readme 'https://github.com/Williangalvani/BlueOS-UsbIp/blob/{tag}/Readme.md'
+LABEL readme 'https://raw.githubusercontent.com/Williangalvani/BlueOS-UsbIp/{tag}/Readme.md'
 LABEL website 'https://github.com/Williangalvani/BlueOS-UsbIp'
 LABEL support 'https://github.com/Williangalvani/BlueOS-UsbIp'
 LABEL requirements "core >  1"
