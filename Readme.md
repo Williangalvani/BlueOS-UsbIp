@@ -2,14 +2,6 @@
 
 This exposes usb devices via IP, which can be used in another client device
 
-To use, first pull it in blueos:
-
-
-```
-red-pill
-sudo docker run -d --net=host --name=blueos-example1 --restart=unless-stopped williangalvani/blueos-extension-usbip:latest
-```
-
 # Client
 
 ## Linux:
