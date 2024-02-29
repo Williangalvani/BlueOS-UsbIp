@@ -1,42 +1,30 @@
 #! /usr/bin/env python3
-import logging
-import shutil
 import subprocess
-import time
-from enum import Enum
-from pathlib import Path
 from typing import Any
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, status
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, status
 from fastapi_versioning import VersionedFastAPI, version
 from fastapi.staticfiles import StaticFiles
 from loguru import logger
+import requests
 
 SERVICE_NAME = "UsbIpManager"
 
 user = "pi"
 password = "raspberry"
 
-def run_command(command: str, check: bool = True) -> "subprocess.CompletedProcess['str']":
-
-    return subprocess.run(
-    [
-        "sshpass",
-        "-p",
-        password,
-        "ssh",
-        "-o",
-        "StrictHostKeyChecking=no",
-        f"{user}@localhost",
-        command,
-    ],
-    check=check,
-    text=True,
-    stdout=subprocess.PIPE,
-    stderr=subprocess.PIPE,
-)
+def run_command(command: str, check: bool = True) -> str:
+    url = 'http://localhost:9100/v1.0/command/host'
+    params = {'command': command, 'i_know_what_i_am_doing': 'true'}
+    response = requests.post(url, params=params)
+    logger.debug(command)
+    logger.debug(response.json())
+    # Handle the response as needed
+    if response.status_code == 200:
+        return response.json()["stdout"]
+    else:
+        raise Exception("unable to talk to host!")
 
 
 # logging.basicConfig(handlers=[InterceptHandler()], level=0)
@@ -54,7 +42,8 @@ logger.info("Starting USB IP manager")
 async def command_list() -> Any:
     command = f'sudo usbip list -l'
     logger.debug(f"Running command: {command}")
-    output = run_command(command).stdout.strip()
+    output = run_command(command)
+    logger.debug(output)
     devices = output.split("\n\n")
     organized_devices = []
     for device in devices:
@@ -71,12 +60,16 @@ async def command_list() -> Any:
     logger.debug(f"Running command: {command}")
 
     # extract ids of devices exposed
-    output = run_command(command).stdout.strip()
+    output = run_command(command).strip()
     try:
-        data = output.split("localhost")[1].strip().split("\n")
+        data = output.split("localhost")[1].strip().split("\\n")
+        for line in data:
+          logger.debug(line)
         data = [line.strip() for line in data if line and "           : /" not in line and "           : (" not in line]
         ids = [line.split(": ")[0] for line in data]
-
+         #log all of this
+        logger.debug(f"ids: {ids}")
+        logger.debug(f"organized_devices: {organized_devices}")
         for device in organized_devices:
             if device["bus_id"] in ids:
                 device["exposed"] = True
@@ -91,7 +84,7 @@ async def command_list() -> Any:
 async def command_bind(device: str) -> Any:
     command = f'sudo usbip bind -b {device}'
     logger.debug(f"Running command: {command}")
-    output = run_command(command).stdout
+    output = run_command(command)
     return output
 
 
@@ -100,7 +93,7 @@ async def command_bind(device: str) -> Any:
 async def command_unbind(device: str) -> Any:
     command = f'sudo usbip unbind -b {device}'
     logger.debug(f"Running command: {command}")
-    output = run_command(command).stdout
+    output = run_command(command)
     return output
 
 
@@ -110,6 +103,7 @@ app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 if __name__ == "__main__":
     # Running uvicorn with log disabled so loguru can handle it
+    logger.info(run_command("sudo apt update && sudo apt install -y usbip"))
     logger.info(run_command("sudo modprobe usbip-core && sudo modprobe usbip-host"))
     logger.info(run_command("sudo usbipd -D"))
 

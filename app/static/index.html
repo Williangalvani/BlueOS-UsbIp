@@ -28,11 +28,10 @@
                             </v-card>
                         </v-col>
                     </v-row>
-                    <v-row>
+                    <v-row v-if="status">
                         <v-col>
                             <v-card height="200">
                                 <v-card-text>{{ status }}</v-card-text>
-                                </v-card-footer>
                             </v-card>
                         </v-col>
                     </v-row>

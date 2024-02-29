@@ -3,7 +3,7 @@
     "description":"Allows exposing USB peripherals to the topside computer",
     "icon":"mdi-usb",
     "company":"Blue Robotics",
-    "version":"1.0.0",
+    "version":"1.0.2",
     "webpage":"",
     "api":""
  }

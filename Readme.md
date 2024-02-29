@@ -2,13 +2,6 @@
 
 This exposes usb devices via IP, which can be used in another client device
 
-To use, first pull it in blueos:
-
-
-```
-red-pill
-sudo docker run -d --net=host --name=blueos-example1 --restart=unless-stopped williangalvani/blueos-extension-usbip:latest
-```
 
 # Client
 
@@ -30,3 +23,9 @@ sudo usbip attach --remote blueos.local --busid 1-1.3
 
 Download the 3.6 dev release from https://github.com/cezanne/usbip-win and follow the "Client" instructions there.
 The new "ude" driver seemed to work for me.
+
+
+# Changelog:
+
+ - v1.0.2:
+     - updated to use commander instead of hard-coded ID to talk to host
