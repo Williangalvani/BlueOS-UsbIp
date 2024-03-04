@@ -44,11 +44,14 @@ async def command_list() -> Any:
     logger.debug(f"Running command: {command}")
     output = run_command(command)
     logger.debug(output)
-    devices = output.split("\n\n")
+    devices = output.split("\\n\\n")
     organized_devices = []
     for device in devices:
+        if len(device) < 10:
+            continue
+        logger.debug(device)
         bus_id = device.split("busid")[1].split(" (")[0].strip()
-        device_data = device.split(bus_id)[1].strip()
+        device_data = device.split(bus_id)[1].replace("\\n","").strip()
         organized_devices.append(
             {
                 "bus_id": bus_id,
