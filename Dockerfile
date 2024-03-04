@@ -6,7 +6,7 @@ RUN python /app/setup.py install
 COPY app/static/index.html /app/static/index.html
 COPY app/main.py /app/main.py
 
-LABEL version="1.0.2"
+LABEL version="1.0.3"
 LABEL permissions='\
 {\
     "NetworkMode": "host"\
