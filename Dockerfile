@@ -6,10 +6,13 @@ RUN python /app/setup.py install
 COPY app/static/index.html /app/static/index.html
 COPY app/main.py /app/main.py
 
-LABEL version="1.0.3"
+LABEL version="1.0.4"
 LABEL permissions='\
 {\
+  "HostConfig": {\
+    "Privileged": true,\
     "NetworkMode": "host"\
+  }\
 }'
 LABEL authors='[\
     {\
